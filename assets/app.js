@@ -1,1 +1,0 @@
-document.getElementById('app').innerHTML='<h3>Carregado</h3>'
