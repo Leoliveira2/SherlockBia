@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sherlock Bia — v1.4 (Padrões com Botões)</title>
+<title>Sherlock Bia — v1.4 (Revelação de Pistas e Inventário Modal)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 /* CSS Variables for theming */
@@ -626,7 +626,7 @@ const Utils = (function() {
       const modalOptions = document.getElementById('modal-options');
 
       modalTitle.textContent = title;
-      modalMessage.textContent = message;
+      modalMessage.innerHTML = message; // Changed to innerHTML to allow HTML content
       modalOptions.innerHTML = optionsHtml;
 
       if (inputType === 'text') {
@@ -697,7 +697,7 @@ const Utils = (function() {
   }
 
 
-  return { fmtTime, getCase, addToast, showConfirmationModal, showPromptModal, showDialogueModal, showAccusationModal, showOptionsModal };
+  return { fmtTime, getCase, addToast, showConfirmationModal, showPromptModal, showDialogueModal, showAccusationModal, showOptionsModal, showInventoryModal: null }; // showInventoryModal is now in Utils, initially null, then assigned
 })();
 
 // Destructure for easier access
@@ -718,7 +718,8 @@ const Data = (function() {
       ],
       solution: 'zico',
       clues: [
-        { id: 'k1', text: 'Marca de graxa na porta', weight: 2, hs: { x: 8, y: 50, w: 22, h: 16 } },
+        // k1 now requires revelation through dialogue
+        { id: 'k1', text: 'Marca de graxa na porta', weight: 2, hs: { x: 8, y: 50, w: 22, h: 16 }, requiresReveal: true },
         { id: 'k2', text: 'Bilhete rasgado com a letra Z', weight: 1, requires: 'cipher', cipherText: 'Qeb troféu foi movido', hs: { x: 64, y: 28, w: 22, h: 16 } },
         { id: 'k3', text: 'Chave velha com etiqueta "Manutenção"', weight: 3, requires: 'pattern', patternSeq: [2, 4, 7, 11, 16], patternAnswer: 22, patternHint: '+2,+3,+4,+5...', hs: { x: 40, y: 70, w: 20, h: 16 }, patternOptions: [18, 20, 22, 24] },
         { id: 'z_conf', text: 'Confissão parcial de Zico', weight: 2, isHiddenHotspot: true }
@@ -730,7 +731,8 @@ const Data = (function() {
             "z1": {
               text: "Eu? Pegar o relógio? Só estava correndo…",
               options: [
-                { label: "Perguntar sobre a graxa na porta", next: "z2", effect: { award: "k1" } },
+                // Option to reveal hotspot k1
+                { label: "Perguntar sobre a graxa na porta", next: "z2", effect: { award: "z_conf", revealHotspot: "k1" } },
                 { label: "Onde você estava às 10:10?", next: "z3" }
               ]
             },
@@ -825,10 +827,10 @@ const Data = (function() {
 
   // Scene backgrounds mapping
   const SCENE_BACKGROUNDS = {
-    'corridor': './school_hallway_cartoon.png',
-    'kitchen': './kitchen_cartoon.png',
-    'hall': './hall_cartoon.png',
-    'library': './library_cartoon.png' // 'library' added for completeness, but not used in current cases
+    'corridor': './assets/school_hallway_cartoon.png',
+    'kitchen': './assets/kitchen_cartoon.png',
+    'hall': './assets/hall_cartoon.png',
+    'library': './assets/library_cartoon.png' // 'library' added for completeness, but not used in current cases
   };
 
   function decodeCaesar(s, shift) {
@@ -882,7 +884,12 @@ const GameState = (function() {
   function updateSession(caseId, updates) {
     // Ensure `clues` array is always initialized
     if (!state.sessions[caseId]) {
-      state.sessions[caseId] = { caseId, start: Date.now(), status: 'open', clues: [], errors: 0, hints: 0, sessionId: `session_${caseId}_${Date.now()}` };
+      state.sessions[caseId] = {
+        caseId, start: Date.now(), status: 'open',
+        clues: [], errors: 0, hints: 0,
+        sessionId: `session_${caseId}_${Date.now()}`,
+        revealedHotspots: [] // NEW: Initialize revealedHotspots array
+      };
     }
     // Deep merge for nested objects like 'result' if necessary, but shallow merge is fine for simple properties.
     state.sessions[caseId] = { ...state.sessions[caseId], ...updates };
@@ -903,7 +910,18 @@ const SceneRenderer = (function() {
     const backgroundImage = getSceneBackground(sceneType);
 
     const hotspots = caseData.clues
-      .filter(clue => clue.hs && !clue.isHiddenHotspot && !session.clues.includes(clue.id))
+      .filter(clue => {
+        // Only render if it has hotspot coordinates and is not already collected
+        if (!clue.hs || session.clues.includes(clue.id)) return false;
+
+        // If it requires revelation, check if its ID is in the session's revealedHotspots list
+        if (clue.requiresReveal) {
+          return session.revealedHotspots && session.revealedHotspots.includes(clue.id);
+        }
+
+        // If it doesn't require revelation (and is not collected), it's always visible
+        return true;
+      })
       .map(clue => {
         const { x, y, w, h } = clue.hs;
         return `<div class="hotspot" style="left:${x}%; top:${y}%; width:${w}%; height:${h}%;"
@@ -1048,10 +1066,9 @@ const UI = (function() {
     const cluesFound = currentSession.clues || [];
     const timeSpent = currentSession.timeSpent || (currentSession.start ? Math.floor((Date.now() - currentSession.start) / 1000) : 0);
 
-    const cluesList = caseData.clues
-      .filter(clue => cluesFound.includes(clue.id))
-      .map(clue => `<li>${clue.text} <span class="small">(Peso: ${clue.weight})</span></li>`)
-      .join('') || '<li class="small">Nenhuma pista encontrada ainda...</li>';
+    // Calculate essential clues count for the inventory
+    const essentialClues = caseData.clues.filter(clue => !clue.isHiddenHotspot);
+    const essentialCluesFound = essentialClues.filter(clue => cluesFound.includes(clue.id));
 
     const suspectsList = caseData.suspects
       .map(suspect => `
@@ -1075,7 +1092,7 @@ const UI = (function() {
 
       <div class="row" style="margin-top:8px">
         ${(caseData.clues || []).filter(k => !k.hs && !k.isHiddenHotspot).map(k => {
-            const found = currentSession.clues.includes(k.id); // CORRECTED: Use currentSession.clues
+            const found = currentSession.clues.includes(k.id);
             return `<button class="btn" data-action="tap-clue" data-session-id="${currentSession.sessionId}" data-clue-id="${k.id}" data-case-id="${caseData.id}">${found ? '✔️' : '🔍'} ${k.text}</button>`
         }).join('')}
       </div>
@@ -1083,10 +1100,10 @@ const UI = (function() {
       <hr>
 
       <div class="grid">
-        <div class="card">
-          <h3>📓 Caderno de Pistas</h3>
-          <ul>${cluesList}</ul>
-        </div>
+        <button class="card" data-action="open-inventory">
+          <h3>🎒 Inventário de Pistas (${essentialCluesFound.length}/${essentialClues.length})</h3>
+          <p class="small">Clique para ver suas pistas e itens coletados.</p>
+        </button>
         <div class="card">
           <h3>👥 Interrogatórios</h3>
           <p class="small">Converse para obter pistas (respostas certas liberam itens).</p>
@@ -1193,7 +1210,7 @@ const GameLogic = (function() {
         );
 
         if (choice === null) { // User cancelled
-            addToast('Padrão cancelado.', 'info');
+            addToast('Padrão cancelada.', 'info');
             return;
         }
 
@@ -1280,6 +1297,15 @@ const GameLogic = (function() {
             addToast('Você já tem essa pista.', 'info');
           }
         }
+        // NEW: Handle revealHotspot effect
+        if (selectedOption.effect?.revealHotspot) {
+          const session = GameState.getSession(caseId);
+          if (!session.revealedHotspots.includes(selectedOption.effect.revealHotspot)) {
+            session.revealedHotspots.push(selectedOption.effect.revealHotspot);
+            GameState.updateSession(caseId, { revealedHotspots: session.revealedHotspots });
+            addToast(`🔍 Novo local de interesse revelado!`);
+          }
+        }
 
         if (selectedOption.end) {
           addToast('Diálogo encerrado.', 'info');
@@ -1288,7 +1314,7 @@ const GameLogic = (function() {
           currentNodeId = selectedOption.next;
         } else { // No next node defined, effectively ends conversation
           keepTalking = false;
-          addToast('Diálogo encerrado.', 'info');
+          addToast('Opção inválida ou diálogo encerrado.', 'info');
         }
       } else { // Invalid choice or no options left
         keepTalking = false;
@@ -1446,6 +1472,9 @@ const EventHandler = (function() {
       case 'toggle-narration':
         MainApp.toggleNarration();
         break;
+      case 'open-inventory': // NEW: Handle inventory button click
+        MainApp.openInventory();
+        break;
       // These actions are handled by the new custom modal system, so they are kept here
       // for completeness but their logic is now within the modal's promise resolution.
       case 'cancel-modal':
@@ -1588,6 +1617,19 @@ const MainApp = (function() {
     safeRender(() => UI.renderCase(getCase(session.caseId), S));
   }
 
+  // NEW: Function to open the Inventory Modal
+  async function openInventory() {
+    const currentCaseSession = Object.values(S.sessions).find(s => s.status === 'open');
+    if (!currentCaseSession) {
+      addToast('Nenhum caso ativo para abrir o inventário.', 'info');
+      return;
+    }
+    const caseData = getCase(currentCaseSession.caseId);
+    // Call the newly defined showInventoryModal in Utils
+    await Utils.showInventoryModal(caseData, currentCaseSession);
+    // No need to re-render the case, as the modal is self-contained.
+  }
+
   // --- Settings Toggles ---
   function toggleFont() {
     S.user.settings.largeFont = !S.user.settings.largeFont;
@@ -1637,6 +1679,7 @@ const MainApp = (function() {
     resetProgress,
     startCase,
     giveHint,
+    openInventory, // Expose openInventory
     toggleFont,
     toggleNarration,
     updateSessionTime,
@@ -1654,6 +1697,45 @@ const MainApp = (function() {
     }
   };
 })();
+
+// =====================================
+// NEW: Utils.showInventoryModal definition
+// Needs to be defined after Utils is available, but before it's used
+Utils.showInventoryModal = async function(caseData, session) {
+    const cluesFound = session.clues || [];
+    const cluesListHtml = cluesFound
+      .map(clueId => {
+        const clue = caseData.clues.find(c => c.id === clueId);
+        // Only list clues that exist and are not 'hidden hotspots' (which are usually just markers for dialogue progression)
+        if (clue && !clue.isHiddenHotspot) {
+          return `<li style="text-align: left; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2em;">✔️</span>
+                    <span><strong>${clue.text}</strong>${clue.weight ? ` <span class="small" style="white-space: nowrap;">(Peso: ${clue.weight})</span>` : ''}</span>
+                  </li>`;
+        }
+        return '';
+      })
+      .join('') || '<li style="text-align: center;" class="small">Nenhuma pista encontrada ainda...</li>'; // Centered message
+
+    const essentialClues = caseData.clues.filter(clue => !clue.isHiddenHotspot);
+    const essentialCluesFound = essentialClues.filter(clue => cluesFound.includes(clue.id));
+
+    const contentHtml = `
+      <div style="text-align: center;">
+        <p style="font-size: 1.1rem; margin-bottom: 15px;">Você encontrou ${essentialCluesFound.length} de ${essentialClues.length} pistas essenciais!</p>
+        <ul style="list-style-type: none; padding: 0; max-height: 200px; overflow-y: auto; text-align: center;">
+          ${cluesListHtml}
+        </ul>
+      </div>
+    `;
+
+    return showCustomModal(
+      '🎒 Seu Inventário de Pistas',
+      contentHtml, // Message now accepts HTML content
+      `<button class="btn pri" data-value="close">Fechar</button>`
+    );
+};
+
 
 // =====================================
 // Bootstrap: Initialize the application
