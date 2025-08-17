@@ -3,7 +3,7 @@
 // Module: StorageManager - Gerencia o localStorage
 // =====================================
 class StorageManager {
-  static KEY = 'sbia_state_v1_8'; // Updated key for potential fixes and new start
+  static KEY = 'sbia_state_v1_9'; // Updated key for new version with randomness
 
   static defaultState() {
     return {
@@ -778,10 +778,13 @@ class UIManager {
   }
 
   renderHub(state) {
-    const cards = Data.CASES.map(c => {
+    // Shuffle the cases array for randomness each time the hub is rendered
+    const shuffledCases = [...Data.CASES].sort(() => Math.random() - 0.5);
+
+    const cards = shuffledCases.map(c => {
       const session = this.gameState.getSession(c.id);
       const stars = session?.result?.stars || 0;
-      const isLocked = false;
+      const isLocked = false; // Add logic here if you want to lock cases based on level or previous completion
 
       return `
         <div class="card ${isLocked ? 'locked' : ''}">
@@ -819,7 +822,9 @@ class UIManager {
           caseId: caseData.id,
           start: Date.now(),
           status: 'open',
-          clues: [], errors: 0, hints: 0
+          clues: [],
+          errors: 0,
+          hints: 0
       });
       session = this.gameState.getSession(caseData.id);
     }
@@ -942,7 +947,7 @@ class UIManager {
 class SceneRenderer {
   static buildScene(caseData, session) {
     const sceneType = caseData.scene || 'corridor';
-    const backgroundImage = Data.SCENE_BACKGROUNDS[sceneType] || './assets/placeholder_scene.png'; 
+    const backgroundImage = Data.SCENE_BACKGROUNDS[sceneType] || './assets/placeholder_scene.png'; // Fallback to a generic local placeholder if type not found
 
     const isEagleVisionActive = session.activeEffects?.eagleVision?.active;
 
