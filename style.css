@@ -1,4 +1,3 @@
-/* style.css */
 /* CSS Variables for theming */
 :root {
   --bg: #0b1020;
@@ -54,9 +53,9 @@ header {
 }
 
 header h1 {
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* Adjusted for better responsiveness */
   margin: 0;
-  white-space: nowrap;
+  white-space: nowrap; /* Prevent wrapping on smaller screens */
 }
 
 .nav {
@@ -75,8 +74,8 @@ header h1 {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   font-size: 0.95rem;
-  text-decoration: none;
-  display: inline-flex;
+  text-decoration: none; /* For button-like links */
+  display: inline-flex; /* Ensure consistent alignment with icons */
   align-items: center;
   justify-content: center;
 }
@@ -94,10 +93,10 @@ header h1 {
 
 .btn.pri {
   background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: var(--bg);
+  color: var(--bg); /* Darker text for bright background */
   border: none;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(125, 211, 252, 0.3);
+  box-shadow: 0 4px 10px rgba(125, 211, 252, 0.3); /* Accentuated shadow */
 }
 
 .btn.pri:hover {
@@ -147,7 +146,7 @@ header h1 {
 
 .card h3 {
   margin: .2rem 0 .4rem 0;
-  color: var(--accent);
+  color: var(--accent); /* Highlight headings */
 }
 
 /* Badges and small text */
@@ -156,14 +155,14 @@ header h1 {
   padding: 4px 8px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.75rem; /* 12px */
   color: #9cc3ff;
   margin-right: 4px;
   background: rgba(var(--line), 0.3);
 }
 
 .small {
-  font-size: 0.8rem;
+  font-size: 0.8rem; /* 12px */
   color: var(--muted);
 }
 
@@ -187,7 +186,7 @@ header h1 {
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 6px 10px;
-  font-size: 0.75rem;
+  font-size: 0.75rem; /* 12px */
   color: #cfe0ff;
 }
 
@@ -198,7 +197,7 @@ progress {
   -webkit-appearance: none;
   appearance: none;
   border-radius: 99px;
-  overflow: hidden;
+  overflow: hidden; /* Ensure border-radius applies */
 }
 
 progress::-webkit-progress-bar {
@@ -219,7 +218,7 @@ hr {
 
 footer {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.75rem; /* 12px */
   text-align: center;
   margin: 16px 0;
 }
@@ -443,7 +442,7 @@ kbd {
   padding: 25px;
   box-shadow: var(--shadow-medium);
   text-align: center;
-  max-width: 450px;
+  max-width: 450px; /* Increased max-width */
   width: 90%;
   transform: translateY(-20px);
   transition: transform 0.3s ease-out;
@@ -462,7 +461,7 @@ kbd {
 }
 
 .modal-content p {
-  margin-bottom: 0;
+  margin-bottom: 0; /* Remove default margin */
   font-size: 1.1rem;
 }
 
@@ -480,15 +479,129 @@ kbd {
   display: flex;
   justify-content: center;
   gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow buttons to wrap */
 }
 
-/* Efeito para Visão de Águia */
-.scene.eagle-vision-active {
-  box-shadow: 0 0 25px 5px var(--accent), 0 0 15px 2px var(--accent2) inset;
-  transition: box-shadow 0.3s ease-in-out;
+/* New styles for Difference Game */
+.difference-game-container {
+    display: flex;
+    flex-direction: column; /* Stack images vertically on small screens */
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
 }
 
+.difference-image-wrapper {
+    position: relative;
+    width: 100%; /* Take full width on small screens */
+    max-width: 500px; /* Max width for each image */
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+.difference-image {
+    width: 100%;
+    display: block;
+    border-radius: 8px; /* Slightly smaller border-radius inside wrapper */
+}
+
+.difference-hotspot {
+    position: absolute;
+    /* Styles for the clickable areas */
+    background: rgba(255, 255, 0, 0.3); /* Semi-transparent yellow highlight */
+    border: 2px dashed var(--accent);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.difference-hotspot.found {
+    background: rgba(0, 255, 0, 0.3); /* Green when found */
+    border: 2px solid var(--ok);
+    pointer-events: none; /* No longer clickable */
+}
+
+.difference-hotspot:hover {
+    background: rgba(255, 255, 0, 0.5);
+    border-color: var(--warn);
+}
+
+/* Skill Tree Styles */
+.skill-tree-container {
+    padding: 20px;
+    background: var(--panel);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-medium);
+    margin: 20px auto;
+    max-width: 900px;
+}
+
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.skill-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.2s ease;
+}
+
+.skill-card h4 {
+    color: var(--accent2);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.skill-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    flex-grow: 1; /* Allows description to take up space */
+}
+
+.skill-card .skill-cost {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--gold);
+    margin-top: 10px;
+}
+
+.skill-card .skill-action {
+    margin-top: 15px;
+    align-self: flex-end; /* Pushes button to the bottom right */
+}
+
+.skill-card .skill-action .btn {
+    width: 100%; /* Make button fill its container */
+}
+
+.skill-card.unlocked {
+    border-color: var(--ok);
+    background: #11203a; /* Slightly different background for unlocked */
+}
+
+.skill-card.unlocked .skill-cost {
+    color: var(--ok);
+}
+
+@media (min-width: 768px) {
+    .difference-game-container {
+        flex-direction: row; /* Display images side-by-side on larger screens */
+    }
+}
 
 @media (max-width: 600px) {
   header {
@@ -521,5 +634,8 @@ kbd {
   }
   .modal-content p {
     font-size: 1rem;
+  }
+  .skill-grid {
+    grid-template-columns: 1fr;
   }
 }

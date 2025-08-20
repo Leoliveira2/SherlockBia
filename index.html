@@ -3,21 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sherlock Bia — v1.8 (Final Fixes)</title>
-<link rel="stylesheet" href="style.css">
+<title>Sherlock Bia — v1.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+<!-- Link para o arquivo CSS externo -->
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <h1>🕵️‍♀️ Sherlock Bia — v1.8</h1>
+  <h1>🕵️‍♀️ Sherlock Bia — v1.6</h1>
   <div class="nav">
     <button class="btn" data-action="go-welcome">Início</button>
     <button class="btn" data-action="go-hub">Mapa de Casos</button>
     <button class="btn" data-action="go-parents">Painel dos Pais</button>
+    <button class="btn" data-action="go-skill-tree">🌟 Habilidades</button> <!-- Novo botão para Habilidades -->
     <button class="btn ghost" data-action="reset-progress">Zerar Progresso</button>
   </div>
 </header>
-<main class="container" id="app"><!-- Conteúdo renderizado via JS --></main>
+<main class="container" id="app"><!-- conteúdo renderizado via JS --></main>
 <div id="toast-container" aria-live="polite"></div>
 
 <!-- Custom Modals -->
@@ -32,6 +34,7 @@
 
 <footer>Protótipo com cenários cartoon realistas. Imagens geradas dinamicamente para cada ambiente.</footer>
 
-<script type="module" src="script.js"></script>
+<!-- Link para o arquivo JavaScript externo -->
+<script src="script.js"></script>
 </body>
 </html>
