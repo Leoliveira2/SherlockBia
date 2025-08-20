@@ -305,7 +305,8 @@ const Data = (function() {
       ],
       solution: 'caio',
       clues: [
-        { id: 'l1', text: 'Livro com anotações sobre a chave', weight: 2, hs: { x: 15, y: 40, w: 20, h: 16, icon: '&#x1F4DA;' }, requiresReveal: true },
+        // Updated to use the image as hotspot icon
+        { id: 'l1', text: 'Livro com anotações sobre a chave', weight: 2, hs: { x: 15, y: 40, w: 20, h: 16, icon: '<img src="./assets/pista_chave_biblioteca.png" alt="Chave da Biblioteca" class="clue-icon"/>' }, requiresReveal: true },
         { id: 'l2', text: 'Bilhete cifrado sobre o livro', weight: 3, requires: 'cipher', cipherText: 'Fqhu zlv qd elhqd', hs: { x: 60, y: 25, w: 24, h: 18, icon: '&#x1F4DD;' } },
         { id: 'l3', text: 'Criptograma no pedestal', weight: 2, requires: 'pattern', patternSeq: [1, 3, 6, 10, 15], patternAnswer: 21, patternHint: '+2,+3,+4,+5...', hs: { x: 80, y: 60, w: 20, h: 16, icon: '&#x1F5D2;' }, patternOptions: [18, 20, 21, 23] },
         { id: 'caio_conf', text: 'Confissão parcial do Professor Caio', weight: 2, isHiddenHotspot: true }
@@ -519,8 +520,8 @@ const Data = (function() {
   // For now, using a simplified model with SVG differences as placeholders
   const DIFFERENCES = {
     'diff_quadro': {
-      image1: 'https://placehold.co/500x300/1a1a1a/ffffff?text=Quadro+Original', // Placeholder for Image 1
-      image2: 'https://placehold.co/500x300/1a1a1a/ffffff?text=Quadro+Virado', // Placeholder for Image 2
+      image1: './assets/quadro_original.png', // Placeholder for Image 1
+      image2: './assets/quadro_virado.png',   // Placeholder for Image 2
       // Differences are relative to a 500x300 image size, adjust if image size changes
       // Format: { x, y, width, height }
       diffAreas: [
