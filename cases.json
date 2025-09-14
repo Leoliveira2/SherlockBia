@@ -1,0 +1,534 @@
+[
+  {
+    "id": "c-001",
+    "title": "O Mistério do Lanche Desaparecido",
+    "intro": "O lanche favorito da Bia sumiu da mochila! Quem o pegou?",
+    "scene": "school_hallway",
+    "difficulty": 1,
+    "chapter": 1,
+    "baseSuspects": [
+      { "id": "leo", "name": "Leo", "traits": ["comilão", "distraído"] },
+      { "id": "sofia", "name": "Sofia", "traits": ["organizada", "observadora"] },
+      { "id": "pedro", "name": "Pedro", "traits": ["brincalhão", "curioso"] }
+    ],
+    "culpritPool": ["leo", "pedro"],
+    "clueSets": {
+      "leo": [
+        { "id": "clue_l1", "text": "Embalagem de biscoito amassada perto do armário do Leo", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F36A;", "potentialPositions": [[10, 60, 15, 10], [12, 55, 18, 12]] } },
+        { "id": "clue_l2", "text": "Mancha de chocolate na camisa do Leo", "weight": 1, "type": "dialogue", "dialogueTrigger": "leo_chocolate" }
+      ],
+      "sofia": [
+        { "id": "clue_s1", "text": "Bilhete sobre dieta saudável na lixeira", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[80, 20, 10, 8], [78, 25, 12, 9]] } }
+      ],
+      "pedro": [
+        { "id": "clue_p1", "text": "Desenho de um sanduíche gigante no caderno do Pedro", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F354;", "potentialPositions": [[45, 70, 12, 10], [48, 65, 15, 11]] } },
+        { "id": "clue_p2", "text": "Rastro de farelos de pão no chão", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F35E;", "potentialPositions": [[30, 80, 10, 8], [35, 75, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "leo": {
+        "start": "l_start",
+        "nodes": {
+          "l_start": { "text": "Lanche? Eu? Ah, não, Bia. Eu já comi o meu!", "options": [{ "label": "Perguntar sobre a embalagem", "next": "l_embalagem" }, { "label": "Onde você estava?", "next": "l_onde" }] },
+          "l_embalagem": { "text": "Ah, isso? Deixei cair sem querer. Não era o seu!", "options": [{ "label": "Encerrar", "end": true }] },
+          "l_onde": { "text": "Estava no pátio, jogando bola. Pode perguntar para o Pedro.", "options": [{ "label": "Voltar", "next": "l_start" }] },
+          "leo_chocolate": { "text": "Essa mancha? Ah, é de um chocolate que comi mais cedo. Nada a ver com o seu lanche!", "options": [{ "label": "Encerrar", "end": true }] }
+        }
+      },
+      "sofia": {
+        "start": "s_start",
+        "nodes": {
+          "s_start": { "text": "Meu lanche é sempre saudável. Não me interesso por doces ou salgados de outras pessoas.", "options": [{ "label": "Viu alguém?", "next": "s_viu" }] },
+          "s_viu": { "text": "Vi o Leo perto dos armários, parecia estar escondendo algo. E o Pedro estava desenhando algo estranho no caderno.", "options": [{ "label": "Encerrar", "end": true }] }
+        }
+      },
+      "pedro": {
+        "start": "p_start",
+        "nodes": {
+          "p_start": { "text": "Eu? Pegar lanche? Que ideia! Eu estava com o Leo no pátio.", "options": [{ "label": "Perguntar sobre o desenho", "next": "p_desenho" }, { "label": "Onde você estava?", "next": "p_onde" }] },
+          "p_desenho": { "text": "Ah, esse desenho? É que eu estava com fome e sonhando com um lanche gigante!", "options": [{ "label": "Encerrar", "end": true }] },
+          "p_onde": { "text": "No pátio, com o Leo. Ele estava comendo uns biscoitos...", "options": [{ "label": "Voltar", "next": "p_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-002",
+    "title": "O Sumiço do Livro Raro",
+    "intro": "Um livro muito antigo e valioso desapareceu da biblioteca da escola. Quem o levou?",
+    "scene": "library",
+    "difficulty": 2,
+    "chapter": 1,
+    "baseSuspects": [
+      { "id": "prof_arthur", "name": "Prof. Arthur", "traits": ["historiador", "distraído"] },
+      { "id": "diretora_helena", "name": "Diretora Helena", "traits": ["rigorosa", "protetora"] },
+      { "id": "zelador_carlos", "name": "Zelador Carlos", "traits": ["silencioso", "metódico"] }
+    ],
+    "culpritPool": ["prof_arthur", "zelador_carlos"],
+    "clueSets": {
+      "prof_arthur": [
+        { "id": "clue_pa1", "text": "Óculos esquecidos na mesa de leitura", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F453;", "potentialPositions": [[20, 40, 10, 8], [25, 45, 12, 9]] } },
+        { "id": "clue_pa2", "text": "Rascunho de um plano de aula sobre livros antigos", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[30, 70, 15, 10], [35, 65, 18, 12]] } }
+      ],
+      "diretora_helena": [
+        { "id": "clue_dh1", "text": "Memorando sobre segurança da biblioteca", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4C3;", "potentialPositions": [[70, 30, 10, 8], [75, 35, 12, 9]] } }
+      ],
+      "zelador_carlos": [
+        { "id": "clue_zc1", "text": "Chave mestra da biblioteca no chaveiro do zelador", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F511;", "potentialPositions": [[50, 50, 10, 8], [55, 55, 12, 9]] } },
+        { "id": "clue_zc2", "text": "Pó de serra perto da estante do livro", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F332;", "potentialPositions": [[40, 80, 10, 8], [42, 75, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "prof_arthur": {
+        "start": "pa_start",
+        "nodes": {
+          "pa_start": { "text": "Um livro raro? Oh, céus! Eu estava pesquisando sobre a história da escola.", "options": [{ "label": "Sobre os óculos", "next": "pa_oculos" }, { "label": "Viu algo estranho?", "next": "pa_estranho" }] },
+          "pa_oculos": { "text": "Meus óculos? Devo tê-los esquecido. Sou tão distraído!", "options": [{ "label": "Encerrar", "end": true }] },
+          "pa_estranho": { "text": "Vi o Zelador Carlos rondando a estante do livro, mas ele sempre faz isso.", "options": [{ "label": "Voltar", "next": "pa_start" }] }
+        }
+      },
+      "diretora_helena": {
+        "start": "dh_start",
+        "nodes": {
+          "dh_start": { "text": "A segurança da biblioteca é minha prioridade. Estou muito preocupada com este sumiço.", "options": [{ "label": "Sobre o memorando", "next": "dh_memo" }, { "label": "Quem tem acesso?", "next": "dh_acesso" }] },
+          "dh_memo": { "text": "É um lembrete para todos sobre a importância de cuidar dos nossos bens. Nada demais.", "options": [{ "label": "Encerrar", "end": true }] },
+          "dh_acesso": { "text": "Apenas eu, o Professor Arthur e o Zelador Carlos têm acesso total à biblioteca.", "options": [{ "label": "Voltar", "next": "dh_start" }] }
+        }
+      },
+      "zelador_carlos": {
+        "start": "zc_start",
+        "nodes": {
+          "zc_start": { "text": "Livro? Não vi nada. Estava limpando os corredores.", "options": [{ "label": "Sobre a chave mestra", "next": "zc_chave" }, { "label": "Pó de serra?", "next": "zc_serra" }] },
+          "zc_chave": { "text": "Ah, essa chave? É para todas as portas. Nada de especial.", "options": [{ "label": "Encerrar", "end": true }] },
+          "zc_serra": { "text": "Pó de serra? Deve ter vindo da marcenaria que consertou a porta da sala de música. Não tem nada a ver com o livro.", "options": [{ "label": "Voltar", "next": "zc_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-003",
+    "title": "O Quadro Misterioso",
+    "intro": "Um quadro de arte moderna da sala de música foi virado de cabeça para baixo. Quem fez essa travessura?",
+    "scene": "music_room",
+    "difficulty": 2,
+    "chapter": 2,
+    "baseSuspects": [
+      { "id": "clara", "name": "Clara", "traits": ["artista", "rebelde"] },
+      { "id": "diretor_fernando", "name": "Diretor Fernando", "traits": ["conservador", "organizado"] },
+      { "id": "monitora_ana", "name": "Monitora Ana", "traits": ["responsável", "nervosa"] }
+    ],
+    "culpritPool": ["clara", "monitora_ana"],
+    "clueSets": {
+      "clara": [
+        { "id": "clue_c1", "text": "Pincel com tinta fresca no chão", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F58C;", "potentialPositions": [[15, 70, 10, 8], [18, 65, 12, 9]] } },
+        { "id": "clue_c2", "text": "Esboço de um quadro virado no caderno da Clara", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[40, 30, 15, 10], [42, 35, 18, 12]] } }
+      ],
+      "diretor_fernando": [
+        { "id": "clue_df1", "text": "Regulamento escolar sobre vandalismo", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4C3;", "potentialPositions": [[80, 50, 10, 8], [78, 55, 12, 9]] } }
+      ],
+      "monitora_ana": [
+        { "id": "clue_ma1", "text": "Luvas de pano com resquícios de poeira de quadro", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F9E4;", "potentialPositions": [[60, 60, 10, 8], [62, 55, 12, 9]] } },
+        { "id": "clue_ma2", "text": "Bilhete cifrado: 'O quadro não estava certo'", "weight": 2, "type": "cipher", "solution": "Wkh slfwxuh zdv qrw uljkw", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[70, 20, 12, 9], [72, 25, 15, 10]] } }
+      ]
+    },
+    "dialogues": {
+      "clara": {
+        "start": "c_start",
+        "nodes": {
+          "c_start": { "text": "Virar o quadro? Que ideia genial! Mas não fui eu...", "options": [{ "label": "Sobre o pincel", "next": "c_pincel" }, { "label": "Onde você estava?", "next": "c_onde" }] },
+          "c_pincel": { "text": "Ah, esse pincel? Deixei cair enquanto admirava a 'arte' virada.", "options": [{ "label": "Encerrar", "end": true }] },
+          "c_onde": { "text": "Estava no pátio, desenhando. Vi a Monitora Ana saindo da sala de música, parecia nervosa.", "options": [{ "label": "Voltar", "next": "c_start" }] }
+        }
+      },
+      "diretor_fernando": {
+        "start": "df_start",
+        "nodes": {
+          "df_start": { "text": "Um ato de vandalismo! Inaceitável! Estou investigando pessoalmente.", "options": [{ "label": "Sobre o regulamento", "next": "df_reg" }, { "label": "Quem você suspeita?", "next": "df_suspeita" }] },
+          "df_reg": { "text": "É um lembrete para todos sobre as regras da escola. Vandalismo não será tolerado.", "options": [{ "label": "Encerrar", "end": true }] },
+          "df_suspeita": { "text": "A Clara sempre tem ideias 'artísticas' demais. E a Monitora Ana é muito certinha, talvez tenha se irritado com algo.", "options": [{ "label": "Voltar", "next": "df_start" }] }
+        }
+      },
+      "monitora_ana": {
+        "start": "ma_start",
+        "nodes": {
+          "ma_start": { "text": "Eu? Virar o quadro? Jamais! Eu sou responsável!", "options": [{ "label": "Sobre as luvas", "next": "ma_luvas" }, { "label": "Onde você estava?", "next": "ma_onde" }] },
+          "ma_luvas": { "text": "Ah, essas luvas? Usei para limpar o quadro negro. Não tem nada a ver com o quadro de arte.", "options": [{ "label": "Encerrar", "end": true }] },
+          "ma_onde": { "text": "Estava organizando as partituras. Vi a Clara com um pincel na mão, perto da sala.", "options": [{ "label": "Voltar", "next": "ma_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-004",
+    "title": "O Código Secreto do Computador",
+    "intro": "Alguém alterou o código de acesso do computador da sala de informática, impedindo o uso. Quem foi o hacker mirim?",
+    "scene": "computer_lab",
+    "difficulty": 3,
+    "chapter": 2,
+    "baseSuspects": [
+      { "id": "programador_gui", "name": "Programador Gui", "traits": ["gênio da computação", "solitário"] },
+      { "id": "prof_carla", "name": "Prof. Carla", "traits": ["tecnológica", "preocupada"] },
+      { "id": "aluna_rita", "name": "Aluna Rita", "traits": ["curiosa", "mexeriqueira"] }
+    ],
+    "culpritPool": ["programador_gui", "aluna_rita"],
+    "clueSets": {
+      "programador_gui": [
+        { "id": "clue_pg1", "text": "Cabo USB incomum no chão", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F50C;", "potentialPositions": [[10, 50, 10, 8], [12, 45, 12, 9]] } },
+        { "id": "clue_pg2", "text": "Padrão de sequência numérica: 1, 4, 9, 16, ?", "weight": 3, "type": "pattern", "solution": 25, "hint": "Números ao quadrado", "options": [20, 22, 25, 30], "hs": { "icon": "&#x1F522;", "potentialPositions": [[25, 70, 15, 10], [28, 65, 18, 12]] } }
+      ],
+      "prof_carla": [
+        { "id": "clue_pc1", "text": "Livro sobre segurança digital", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DA;", "potentialPositions": [[80, 40, 10, 8], [78, 45, 12, 9]] } }
+      ],
+      "aluna_rita": [
+        { "id": "clue_ar1", "text": "Impressão digital em um teclado específico", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F579;", "potentialPositions": [[50, 30, 10, 8], [52, 35, 12, 9]] } },
+        { "id": "clue_ar2", "text": "Bilhete cifrado: 'A senha é fácil'", "weight": 2, "type": "cipher", "solution": "Wkh sdvvzrug lv hdvb", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[60, 60, 12, 9], [62, 55, 15, 10]] } }
+      ]
+    },
+    "dialogues": {
+      "programador_gui": {
+        "start": "pg_start",
+        "nodes": {
+          "pg_start": { "text": "Código alterado? Que interessante... Eu estava testando um novo programa.", "options": [{ "label": "Sobre o cabo USB", "next": "pg_usb" }, { "label": "Viu alguém?", "next": "pg_viu" }] },
+          "pg_usb": { "text": "Ah, esse cabo? É meu, devo ter deixado cair. Nada a ver com o computador.", "options": [{ "label": "Encerrar", "end": true }] },
+          "pg_viu": { "text": "Vi a Rita mexendo no computador, parecia muito concentrada.", "options": [{ "label": "Voltar", "next": "pg_start" }] }
+        }
+      },
+      "prof_carla": {
+        "start": "pc_start",
+        "nodes": {
+          "pc_start": { "text": "Estou chocada! A segurança dos nossos sistemas é fundamental.", "options": [{ "label": "Sobre o livro", "next": "pc_livro" }, { "label": "Quem tem conhecimento?", "next": "pc_conhecimento" }] },
+          "pc_livro": { "text": "É para uma palestra que darei sobre cibersegurança. Nada a ver com o incidente.", "options": [{ "label": "Encerrar", "end": true }] },
+          "pc_conhecimento": { "text": "O Gui é um gênio, mas a Rita também é muito curiosa e aprende rápido.", "options": [{ "label": "Voltar", "next": "pc_start" }] }
+        }
+      },
+      "aluna_rita": {
+        "start": "ar_start",
+        "nodes": {
+          "ar_start": { "text": "Eu? Mexer no código? Eu só estava jogando um jogo online!", "options": [{ "label": "Sobre a impressão digital", "next": "ar_digital" }, { "label": "Onde você estava?", "next": "ar_onde" }] },
+          "ar_digital": { "text": "Impressão digital? Ah, eu usei aquele teclado. Mas não fiz nada de errado!", "options": [{ "label": "Encerrar", "end": true }] },
+          "ar_onde": { "text": "Estava na sala de informática, claro. Vi o Gui com um cabo estranho na mão.", "options": [{ "label": "Voltar", "next": "ar_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-005",
+    "title": "O Tesouro Escondido do Jardim",
+    "intro": "Um mapa do tesouro foi encontrado no jardim da escola, mas o tesouro sumiu! Quem o desenterrou?",
+    "scene": "garden",
+    "difficulty": 3,
+    "chapter": 3,
+    "baseSuspects": [
+      { "id": "jardineiro_joao", "name": "Jardineiro João", "traits": ["paciente", "conhecedor de plantas"] },
+      { "id": "gemeas_gabi_gigi", "name": "Gêmeas Gabi e Gigi", "traits": ["aventureiras", "travessas"] },
+      { "id": "prof_biologia", "name": "Prof. Biologia", "traits": ["científica", "observadora"] }
+    ],
+    "culpritPool": ["gemeas_gabi_gigi", "jardineiro_joao"],
+    "clueSets": {
+      "jardineiro_joao": [
+        { "id": "clue_jj1", "text": "Pá com terra fresca perto do canteiro de flores", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F6D1;", "potentialPositions": [[10, 70, 10, 8], [12, 65, 12, 9]] } },
+        { "id": "clue_jj2", "text": "Mapa do jardim com um 'X' marcado", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F5FA;", "potentialPositions": [[25, 40, 15, 10], [28, 35, 18, 12]] } }
+      ],
+      "gemeas_gabi_gigi": [
+        { "id": "clue_gg1", "text": "Dois pares de pegadas pequenas na lama", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F463;", "potentialPositions": [[50, 80, 10, 8], [52, 75, 12, 9]] } },
+        { "id": "clue_gg2", "text": "Bilhete cifrado: 'Achamos o tesouro!'", "weight": 2, "type": "cipher", "solution": "Dfkdprv r whvrxur!", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[60, 20, 12, 9], [62, 25, 15, 10]] } }
+      ],
+      "prof_biologia": [
+        { "id": "clue_pb1", "text": "Livro sobre espécies de plantas raras", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DA;", "potentialPositions": [[80, 60, 10, 8], [78, 55, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "jardineiro_joao": {
+        "start": "jj_start",
+        "nodes": {
+          "jj_start": { "text": "Tesouro? No meu jardim? Eu só cuido das plantas.", "options": [{ "label": "Sobre a pá", "next": "jj_pa" }, { "label": "Viu alguém?", "next": "jj_viu" }] },
+          "jj_pa": { "text": "A pá é para o trabalho diário. A terra fresca é de um novo canteiro.", "options": [{ "label": "Encerrar", "end": true }] },
+          "jj_viu": { "text": "As gêmeas estavam correndo por aqui, como sempre. E a Professora de Biologia estava observando umas flores.", "options": [{ "label": "Voltar", "next": "jj_start" }] }
+        }
+      },
+      "gemeas_gabi_gigi": {
+        "start": "gg_start",
+        "nodes": {
+          "gg_start": { "text": "Tesouro? Que legal! A gente adora uma aventura!", "options": [{ "label": "Sobre as pegadas", "next": "gg_pegadas" }, { "label": "Onde vocês estavam?", "next": "gg_onde" }] },
+          "gg_pegadas": { "text": "Ah, sim! Estávamos brincando de caça ao tesouro. Mas não achamos nada de verdade.", "options": [{ "label": "Encerrar", "end": true }] },
+          "gg_onde": { "text": "No jardim, claro! Vimos o Jardineiro João com a pá na mão, e a Professora de Biologia estava lá também.", "options": [{ "label": "Voltar", "next": "gg_start" }] }
+        }
+      },
+      "prof_biologia": {
+        "start": "pb_start",
+        "nodes": {
+          "pb_start": { "text": "Um tesouro? Que interessante! Eu estava coletando amostras de solo para um experimento.", "options": [{ "label": "Sobre o livro", "next": "pb_livro" }, { "label": "Viu algo incomum?", "next": "pb_incomum" }] },
+          "pb_livro": { "text": "É para minha pesquisa. Nada a ver com tesouros.", "options": [{ "label": "Encerrar", "end": true }] },
+          "pb_incomum": { "text": "As gêmeas estavam muito agitadas, e o Jardineiro João estava cavando mais do que o normal.", "options": [{ "label": "Voltar", "next": "pb_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-006",
+    "title": "O Enigma da Cantina",
+    "intro": "A receita secreta do bolo de chocolate da cantina sumiu! Quem a roubou?",
+    "scene": "canteen",
+    "difficulty": 4,
+    "chapter": 3,
+    "baseSuspects": [
+      { "id": "cozinheira_ana", "name": "Cozinheira Ana", "traits": ["protetora da receita", "nervosa"] },
+      { "id": "estudante_gourmet", "name": "Estudante Gourmet", "traits": ["ambicioso", "curioso"] },
+      { "id": "faxineiro_rui", "name": "Faxineiro Rui", "traits": ["observador", "discreto"] }
+    ],
+    "culpritPool": ["cozinheira_ana", "estudante_gourmet"],
+    "clueSets": {
+      "cozinheira_ana": [
+        { "id": "clue_ca1", "text": "Pedaço de papel rasgado com caligrafia da Cozinheira Ana", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[10, 30, 10, 8], [12, 25, 12, 9]] } },
+        { "id": "clue_ca2", "text": "Mancha de farinha no avental da Cozinheira Ana", "weight": 1, "type": "dialogue", "dialogueTrigger": "ana_farinha" }
+      ],
+      "estudante_gourmet": [
+        { "id": "clue_eg1", "text": "Livro de receitas de bolo de chocolate aberto na mesa", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F4DA;", "potentialPositions": [[50, 40, 10, 8], [52, 35, 12, 9]] } },
+        { "id": "clue_eg2", "text": "Padrão de sequência numérica: 2, 3, 5, 8, ?", "weight": 2, "type": "pattern", "solution": 13, "hint": "Sequência de Fibonacci", "options": [11, 12, 13, 14], "hs": { "icon": "&#x1F522;", "potentialPositions": [[60, 70, 15, 10], [62, 65, 18, 12]] } }
+      ],
+      "faxineiro_rui": [
+        { "id": "clue_fr1", "text": "Pano de limpeza com cheiro de chocolate", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F9FC;", "potentialPositions": [[80, 80, 10, 8], [78, 75, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "cozinheira_ana": {
+        "start": "ca_start",
+        "nodes": {
+          "ca_start": { "text": "Minha receita! É um segredo de família! Quem faria isso?", "options": [{ "label": "Sobre o papel rasgado", "next": "ca_papel" }, { "label": "Viu algo suspeito?", "next": "ca_suspeito" }] },
+          "ca_papel": { "text": "Ah, isso? Devo ter rasgado sem querer. Não era a receita.", "options": [{ "label": "Encerrar", "end": true }] },
+          "ca_suspeito": { "text": "O Estudante Gourmet estava muito interessado nas minhas técnicas. E o Faxineiro Rui estava limpando a cozinha mais cedo.", "options": [{ "label": "Voltar", "next": "ca_start" }] },
+          "ana_farinha": { "text": "Farinha? Ah, sim, estava assando um bolo. Mas não o da receita secreta!", "options": [{ "label": "Encerrar", "end": true }] }
+        }
+      },
+      "estudante_gourmet": {
+        "start": "eg_start",
+        "nodes": {
+          "eg_start": { "text": "A receita secreta? Que tentador! Mas eu tenho minhas próprias receitas.", "options": [{ "label": "Sobre o livro de receitas", "next": "eg_livro" }, { "label": "Onde você estava?", "next": "eg_onde" }] },
+          "eg_livro": { "text": "Estava estudando novas técnicas de confeitaria. Sou um entusiasta!", "options": [{ "label": "Encerrar", "end": true }] },
+          "eg_onde": { "text": "Na cantina, claro. Vi a Cozinheira Ana muito nervosa e o Faxineiro Rui com um pano cheiroso.", "options": [{ "label": "Voltar", "next": "eg_start" }] }
+        }
+      },
+      "faxineiro_rui": {
+        "start": "fr_start",
+        "nodes": {
+          "fr_start": { "text": "Receita? Eu só limpo. Não me meto nessas coisas.", "options": [{ "label": "Sobre o pano de chocolate", "next": "fr_pano" }, { "label": "Viu algo incomum?", "next": "fr_incomum" }] },
+          "fr_pano": { "text": "Ah, o pano? Limpei um derramamento de chocolate. Acontece sempre na cantina.", "options": [{ "label": "Encerrar", "end": true }] },
+          "fr_incomum": { "text": "A Cozinheira Ana estava muito agitada, e o Estudante Gourmet estava lendo um livro de receitas na mesa.", "options": [{ "label": "Voltar", "next": "fr_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-007",
+    "title": "O Roubo da Taça de Ouro",
+    "intro": "A taça de ouro do torneio de esportes sumiu do armário de troféus. Quem a levou?",
+    "scene": "hall",
+    "difficulty": 4,
+    "chapter": 4,
+    "baseSuspects": [
+      { "id": "atleta_campeao", "name": "Atleta Campeão", "traits": ["competitivo", "arrogante"] },
+      { "id": "treinador_marcos", "name": "Treinador Marcos", "traits": ["motivado", "protetor"] },
+      { "id": "rival_esportivo", "name": "Rival Esportivo", "traits": ["invejoso", "oportunista"] }
+    ],
+    "culpritPool": ["atleta_campeao", "rival_esportivo"],
+    "clueSets": {
+      "atleta_campeao": [
+        { "id": "clue_ac1", "text": "Foto do Atleta Campeão com a taça, rasgada", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F4F8;", "potentialPositions": [[10, 40, 10, 8], [12, 35, 12, 9]] } },
+        { "id": "clue_ac2", "text": "Mensagem de texto: 'Não aguento perder!'", "weight": 1, "type": "dialogue", "dialogueTrigger": "campeao_perder" }
+      ],
+      "treinador_marcos": [
+        { "id": "clue_tm1", "text": "Lista de presença do treino, com nome do Atleta Campeão ausente", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4CB;", "potentialPositions": [[80, 60, 10, 8], [78, 55, 12, 9]] } }
+      ],
+      "rival_esportivo": [
+        { "id": "clue_re1", "text": "Pegadas de tênis com solado diferente perto do armário", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F463;", "potentialPositions": [[50, 70, 10, 8], [52, 65, 12, 9]] } },
+        { "id": "clue_re2", "text": "Bilhete cifrado: 'A taça será minha'", "weight": 2, "type": "cipher", "solution": "Wkh fxs zloo eh plqh", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[60, 30, 12, 9], [62, 25, 15, 10]] } }
+      ]
+    },
+    "dialogues": {
+      "atleta_campeao": {
+        "start": "ac_start",
+        "nodes": {
+          "ac_start": { "text": "Minha taça? Eu a ganhei! Por que eu a roubaria?", "options": [{ "label": "Sobre a foto rasgada", "next": "ac_foto" }, { "label": "Onde você estava?", "next": "ac_onde" }] },
+          "ac_foto": { "text": "Ah, essa foto? Fiquei com raiva de ter perdido o último jogo e rasguei. Nada a ver com a taça.", "options": [{ "label": "Encerrar", "end": true }] },
+          "ac_onde": { "text": "Estava treinando. Pergunte ao Treinador Marcos. E o Rival Esportivo estava me observando de longe.", "options": [{ "label": "Voltar", "next": "ac_start" }] },
+          "campeao_perder": { "text": "Sim, eu não aguento perder. Mas isso não significa que eu roubaria a taça!", "options": [{ "label": "Encerrar", "end": true }] }
+        }
+      },
+      "treinador_marcos": {
+        "start": "tm_start",
+        "nodes": {
+          "tm_start": { "text": "A taça é um símbolo de esforço. Quem a roubou será punido!", "options": [{ "label": "Sobre a lista de presença", "next": "tm_lista" }, { "label": "Quem você suspeita?", "next": "tm_suspeita" }] },
+          "tm_lista": { "text": "O Atleta Campeão faltou ao treino. Ele estava muito chateado com a derrota.", "options": [{ "label": "Encerrar", "end": true }] },
+          "tm_suspeita": { "text": "O Rival Esportivo sempre teve inveja do nosso time. E o Atleta Campeão estava muito aborrecido.", "options": [{ "label": "Voltar", "next": "tm_start" }] }
+        }
+      },
+      "rival_esportivo": {
+        "start": "re_start",
+        "nodes": {
+          "re_start": { "text": "A taça? Não me interessa. Eu ganho as minhas!", "options": [{ "label": "Sobre as pegadas", "next": "re_pegadas" }, { "label": "Onde você estava?", "next": "re_onde" }] },
+          "re_pegadas": { "text": "Pegadas? Devo ter passado por lá. Estava observando o treino.", "options": [{ "label": "Encerrar", "end": true }] },
+          "re_onde": { "text": "Observando o treino. Vi o Atleta Campeão muito irritado e o Treinador Marcos anotando algo.", "options": [{ "label": "Voltar", "next": "re_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-008",
+    "title": "O Desaparecimento do Mascote",
+    "intro": "O mascote da escola, um pequeno hamster chamado Fofinho, sumiu da sala de aula. Onde ele está?",
+    "scene": "classroom",
+    "difficulty": 5,
+    "chapter": 4,
+    "baseSuspects": [
+      { "id": "aluno_traquinas", "name": "Aluno Traquinas", "traits": ["curioso", "desatento"] },
+      { "id": "prof_ciencias", "name": "Prof. Ciências", "traits": ["protetora de animais", "metódica"] },
+      { "id": "zeladora_maria", "name": "Zeladora Maria", "traits": ["organizada", "observadora"] }
+    ],
+    "culpritPool": ["aluno_traquinas", "prof_ciencias"],
+    "clueSets": {
+      "aluno_traquinas": [
+        { "id": "clue_at1", "text": "Sementes de girassol espalhadas perto da carteira do Aluno Traquinas", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F33B;", "potentialPositions": [[10, 60, 10, 8], [12, 55, 12, 9]] } },
+        { "id": "clue_at2", "text": "Desenho de um hamster fugindo no caderno", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[25, 30, 15, 10], [28, 35, 18, 12]] } }
+      ],
+      "prof_ciencias": [
+        { "id": "clue_pc1", "text": "Jaula de transporte de animais aberta no armário da professora", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F439;", "potentialPositions": [[50, 40, 10, 8], [52, 35, 12, 9]] } },
+        { "id": "clue_pc2", "text": "Bilhete cifrado: 'Fofinho precisava de ar'", "weight": 2, "type": "cipher", "solution": "Iriilqkr qhfhvvlwdgh gh du", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[60, 70, 12, 9], [62, 65, 15, 10]] } }
+      ],
+      "zeladora_maria": [
+        { "id": "clue_zm1", "text": "Pequena pegada de hamster na poeira do chão", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F439;", "potentialPositions": [[80, 80, 10, 8], [78, 75, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "aluno_traquinas": {
+        "start": "at_start",
+        "nodes": {
+          "at_start": { "text": "Fofinho sumiu? Que pena! Eu estava brincando com ele mais cedo.", "options": [{ "label": "Sobre as sementes", "next": "at_sementes" }, { "label": "Onde você estava?", "next": "at_onde" }] },
+          "at_sementes": { "text": "Ah, as sementes? Dei para ele. Acho que ele gostou muito e espalhou.", "options": [{ "label": "Encerrar", "end": true }] },
+          "at_onde": { "text": "Na sala de aula. Vi a Professora de Ciências com uma jaula estranha e a Zeladora Maria limpando o chão.", "options": [{ "label": "Voltar", "next": "at_start" }] }
+        }
+      },
+      "prof_ciencias": {
+        "start": "pc_start",
+        "nodes": {
+          "pc_start": { "text": "Fofinho sumiu? Isso é sério! Ele precisa de cuidados especiais.", "options": [{ "label": "Sobre a jaula", "next": "pc_jaula" }, { "label": "Viu algo incomum?", "next": "pc_incomum" }] },
+          "pc_jaula": { "text": "É uma jaula de transporte. Estava preparando para levá-lo ao veterinário para um check-up. Mas ele sumiu antes!", "options": [{ "label": "Encerrar", "end": true }] },
+          "pc_incomum": { "text": "O Aluno Traquinas estava muito perto da gaiola. E a Zeladora Maria encontrou umas pegadas pequenas.", "options": [{ "label": "Voltar", "next": "pc_start" }] }
+        }
+      },
+      "zeladora_maria": {
+        "start": "zm_start",
+        "nodes": {
+          "zm_start": { "text": "O hamster sumiu? Que bagunça! Eu estava limpando a sala.", "options": [{ "label": "Sobre as pegadas", "next": "zm_pegadas" }, { "label": "Viu algo suspeito?", "next": "zm_suspeito" }] },
+          "zm_pegadas": { "text": "Sim, umas pegadas bem pequenas. Pareciam de hamster. Sumiram perto do armário da professora.", "options": [{ "label": "Encerrar", "end": true }] },
+          "zm_suspeito": { "text": "O Aluno Traquinas estava dando sementes para o Fofinho. E a Professora de Ciências estava com uma jaula aberta.", "options": [{ "label": "Voltar", "next": "zm_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-009",
+    "title": "O Roubo da Fórmula Secreta",
+    "intro": "A fórmula secreta para o experimento da feira de ciências desapareceu do laboratório. Quem a roubou?",
+    "scene": "science_lab",
+    "difficulty": 5,
+    "chapter": 5,
+    "baseSuspects": [
+      { "id": "cientista_mirim", "name": "Cientista Mirim", "traits": ["brilhante", "competitivo"] },
+      { "id": "prof_quimica", "name": "Prof. Química", "traits": ["rigorosa", "protetora"] },
+      { "id": "assistente_lab", "name": "Assistente de Laboratório", "traits": ["desajeitado", "curioso"] }
+    ],
+    "culpritPool": ["cientista_mirim", "assistente_lab"],
+    "clueSets": {
+      "cientista_mirim": [
+        { "id": "clue_cm1", "text": "Óculos de proteção com arranhões recentes", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F9D0;", "potentialPositions": [[10, 40, 10, 8], [12, 35, 12, 9]] } },
+        { "id": "clue_cm2", "text": "Padrão de sequência de letras: A, C, F, J, ?", "weight": 3, "type": "pattern", "solution": "O", "hint": "Pular 1, 2, 3, 4 letras", "options": ["M", "N", "O", "P"], "hs": { "icon": "&#x1F522;", "potentialPositions": [[25, 70, 15, 10], [28, 65, 18, 12]] } }
+      ],
+      "prof_quimica": [
+        { "id": "clue_pq1", "text": "Livro sobre ética científica", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F4DA;", "potentialPositions": [[80, 60, 10, 8], [78, 55, 12, 9]] } }
+      ],
+      "assistente_lab": [
+        { "id": "clue_al1", "text": "Frasco de reagente derramado perto da bancada", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F9EA;", "potentialPositions": [[50, 30, 10, 8], [52, 35, 12, 9]] } },
+        { "id": "clue_al2", "text": "Bilhete cifrado: 'A fórmula é minha agora'", "weight": 2, "type": "cipher", "solution": "Wkh irupxod lv plqh qrz", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[60, 70, 12, 9], [62, 65, 15, 10]] } }
+      ]
+    },
+    "dialogues": {
+      "cientista_mirim": {
+        "start": "cm_start",
+        "nodes": {
+          "cm_start": { "text": "Minha fórmula? Não! Eu sou o único que pode fazer esse experimento!", "options": [{ "label": "Sobre os óculos", "next": "cm_oculos" }, { "label": "Onde você estava?", "next": "cm_onde" }] },
+          "cm_oculos": { "text": "Ah, os óculos? Devo ter arranhado durante um experimento intenso. Nada a ver com a fórmula.", "options": [{ "label": "Encerrar", "end": true }] },
+          "cm_onde": { "text": "No laboratório, trabalhando. Vi o Assistente de Laboratório muito desajeitado e a Professora de Química lendo um livro.", "options": [{ "label": "Voltar", "next": "cm_start" }] }
+        }
+      },
+      "prof_quimica": {
+        "start": "pq_start",
+        "nodes": {
+          "pq_start": { "text": "A fórmula secreta é propriedade da escola! Isso é um ultraje!", "options": [{ "label": "Sobre o livro", "next": "pq_livro" }, { "label": "Quem tem acesso?", "next": "pq_acesso" }] },
+          "pq_livro": { "text": "É para lembrar a todos da importância da ética na ciência. Especialmente agora.", "options": [{ "label": "Encerrar", "end": true }] },
+          "pq_acesso": { "text": "Apenas eu, o Cientista Mirim e o Assistente de Laboratório têm acesso à fórmula.", "options": [{ "label": "Voltar", "next": "pq_start" }] }
+        }
+      },
+      "assistente_lab": {
+        "start": "al_start",
+        "nodes": {
+          "al_start": { "text": "Eu? Roubar a fórmula? Eu sou tão desajeitado que mal consigo segurar um tubo de ensaio!", "options": [{ "label": "Sobre o frasco derramado", "next": "al_frasco" }, { "label": "Onde você estava?", "next": "al_onde" }] },
+          "al_frasco": { "text": "Ah, isso? Deixei cair sem querer. Acontece sempre comigo. Não tem nada a ver com a fórmula.", "options": [{ "label": "Encerrar", "end": true }] },
+          "al_onde": { "text": "No laboratório, limpando. Vi o Cientista Mirim com uma expressão muito séria e a Professora de Química lendo um livro.", "options": [{ "label": "Voltar", "next": "al_start" }] }
+        }
+      }
+    }
+  },
+  {
+    "id": "c-010",
+    "title": "O Mistério da Cápsula do Tempo",
+    "intro": "A cápsula do tempo da escola, que seria aberta hoje, foi violada e seu conteúdo espalhado. Quem fez isso?",
+    "scene": "hall",
+    "difficulty": 5,
+    "chapter": 5,
+    "baseSuspects": [
+      { "id": "ex_aluno_nostalgico", "name": "Ex-Aluno Nostálgico", "traits": ["saudoso", "curioso"] },
+      { "id": "historiador_local", "name": "Historiador Local", "traits": ["pesquisador", "intrusivo"] },
+      { "id": "diretora_helena_final", "name": "Diretora Helena", "traits": ["protetora", "desconfiada"] }
+    ],
+    "culpritPool": ["ex_aluno_nostalgico", "historiador_local"],
+    "clueSets": {
+      "ex_aluno_nostalgico": [
+        { "id": "clue_ean1", "text": "Foto antiga da escola com o Ex-Aluno Nostálgico", "weight": 2, "type": "hotspot", "hs": { "icon": "&#x1F4F8;", "potentialPositions": [[10, 30, 10, 8], [12, 25, 12, 9]] } },
+        { "id": "clue_ean2", "text": "Bilhete cifrado: 'Queria reviver o passado'", "weight": 1, "type": "cipher", "solution": "Txhuld uhylyhu r sdssdgr", "hs": { "icon": "&#x1F4DD;", "potentialPositions": [[25, 70, 15, 10], [28, 65, 18, 12]] } }
+      ],
+      "historiador_local": [
+        { "id": "clue_hl1", "text": "Ferramentas de escavação pequenas perto do local da cápsula", "weight": 3, "type": "hotspot", "hs": { "icon": "&#x1F6D1;", "potentialPositions": [[50, 40, 10, 8], [52, 35, 12, 9]] } },
+        { "id": "clue_hl2", "text": "Padrão de sequência de símbolos: ⚀, ⚁, ⚂, ⚃, ?", "weight": 2, "type": "pattern", "solution": "⚄", "hint": "Sequência de dados", "options": ["⚄", "⚅", "⚀", "⚂"], "hs": { "icon": "&#x1F522;", "potentialPositions": [[60, 70, 12, 9], [62, 65, 15, 10]] } }
+      ],
+      "diretora_helena_final": [
+        { "id": "clue_dhf1", "text": "Chave da cápsula do tempo no chaveiro da Diretora Helena", "weight": 1, "type": "hotspot", "hs": { "icon": "&#x1F511;", "potentialPositions": [[80, 50, 10, 8], [78, 55, 12, 9]] } }
+      ]
+    },
+    "dialogues": {
+      "ex_aluno_nostalgico": {
+        "start": "ean_start",
+        "nodes": {
+          "ean_start": { "text": "A cápsula do tempo! Eu estava tão ansioso para ver o que tinha dentro...", "options": [{ "label": "Sobre a foto antiga", "next": "ean_foto" }, { "label": "Onde você estava?", "next": "ean_onde" }] },
+          "ean_foto": { "text": "É uma foto da minha turma. Me deu uma saudade...", "options": [{ "label": "Encerrar", "end": true }] },
+          "ean_onde": { "text": "Perto da cápsula, claro. Vi o Historiador Local com umas ferramentas e a Diretora Helena muito preocupada.", "options": [{ "label": "Voltar", "next": "ean_start" }] }
+        }
+      },
+      "historiador_local": {
+        "start": "hl_start",
+        "nodes": {
+          "hl_start": { "text": "Um evento histórico! Eu só queria documentar o momento da abertura.", "options": [{ "label": "Sobre as ferramentas", "next": "hl_ferramentas" }, { "label": "Viu algo incomum?", "next": "hl_incomum" }] },
+          "hl_ferramentas": { "text": "São para minha pesquisa arqueológica. Não para abrir cápsulas!", "options": [{ "label": "Encerrar", "end": true }] },
+          "hl_incomum": { "text": "O Ex-Aluno Nostálgico estava muito agitado. E a Diretora Helena parecia estar escondendo algo.", "options": [{ "label": "Voltar", "next": "hl_start" }] }
+        }
+      },
+      "diretora_helena_final": {
+        "start": "dhf_start",
+        "nodes": {
+          "dhf_start": { "text": "A cápsula do tempo é um patrimônio da escola! Quem fez isso será severamente punido!", "options": [{ "label": "Sobre a chave", "next": "dhf_chave" }, { "label": "Quem tem acesso?", "next": "dhf_acesso" }] },
+          "dhf_chave": { "text": "Sim, eu tenho a chave. Mas ela estava guardada em segurança. Não sei como foi usada.", "options": [{ "label": "Encerrar", "end": true }] },
+          "dhf_acesso": { "text": "Apenas eu e o zelador tínhamos acesso à cápsula. Mas o Ex-Aluno Nostálgico e o Historiador Local estavam muito interessados.", "options": [{ "label": "Voltar", "next": "dhf_start" }] }
+        }
+      }
+    }
+  }
+]
