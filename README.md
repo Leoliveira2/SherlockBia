@@ -28,17 +28,33 @@ Esta é uma versão melhorada do jogo Sherlock Bia que implementa **visual de ca
 
 ## Arquivos Incluídos
 
-- `sherlock_bia_improved.html` - Arquivo principal da aplicação
-- `library_cartoon.png` - Imagem de fundo da biblioteca
-- `school_hallway_cartoon.png` - Imagem de fundo do corredor da escola
-- `kitchen_cartoon.png` - Imagem de fundo da cozinha
-- `hall_cartoon.png` - Imagem de fundo do saguão
+- `index.html` - SPA principal
+- `style.css` - Estilos globais
+- `script.js` - Lógica da investigação, cenas e diálogos
+- `cases.json` - Casos e pistas em formato JSON
+- `assets/` + arquivos PNG na raiz - Imagens de cenários e personagens
 
 ## Como Usar
 
 1. **Extrair os arquivos**: Descompacte todos os arquivos em uma pasta
-2. **Abrir no navegador**: Abra o arquivo `sherlock_bia_improved.html` em qualquer navegador moderno
-3. **Começar a jogar**: Clique em "Começar Investigação" e explore os casos com os novos cenários cartoon
+2. **Servir localmente**: Rode um servidor estático na raiz (ex.: `python3 -m http.server 8000`)
+3. **Abrir no navegador**: Acesse `http://localhost:8000/index.html`
+4. **Começar a jogar**: Clique em "Começar Investigação" e explore os casos com os cenários cartoon
+
+## Publicar no Vercel
+
+O projeto é totalmente estático. Você pode publicar de duas formas:
+
+1. **Conectar ao GitHub** (recomendado):
+   - Crie um projeto no Vercel apontando para este repositório.
+   - Selecione o framework "Other" e deixe o comando de build vazio.
+   - Defina o diretório de saída como `.` (raiz) ou `public/` se mover os arquivos para lá.
+   - Cada push no GitHub gera um deploy automático.
+
+2. **Upload manual**:
+   - Baixe os arquivos (`index.html`, `style.css`, `script.js`, `cases.json` e as imagens).
+   - No painel do Vercel, crie um projeto estático e arraste todos os arquivos para o upload.
+   - O Vercel servirá `index.html` na raiz, carregando os demais recursos de forma relativa.
 
 ## Compatibilidade
 
