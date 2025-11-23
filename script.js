@@ -2,25 +2,25 @@
 // Implementa navegação, renderização de cenas e interação com pistas/diálogos
 
 const SCENE_BACKGROUNDS = {
-  school_hallway: "school_hallway_cartoon.png",
-  corridor: "school_hallway_cartoon.png",
-  hall: "hall_cartoon.png",
-  library: "library_cartoon.png",
-  kitchen: "kitchen_cartoon.png",
-  canteen: "kitchen_cartoon.png",
-  garden: "garden_cartoon.png",
-  computer_lab: "kitchen_cartoon.png",
-  music_room: "hall_cartoon.png",
-  classroom: "hall_cartoon.png"
+  school_hallway: "assets/school_hallway_cartoon.png",
+  corridor: "assets/school_hallway_cartoon.png",
+  hall: "assets/hall_cartoon.png",
+  library: "assets/library_cartoon.png",
+  kitchen: "assets/kitchen_cartoon.png",
+  canteen: "assets/canteen_cartoon.png",
+  garden: "assets/garden_cartoon.png",
+  computer_lab: "assets/computer_lab_cartoon.png",
+  music_room: "assets/music_room_cartoon.png",
+  classroom: "assets/hall_cartoon.png"
 };
 
 const CHARACTER_PORTRAITS = {
-  programador_gui: "programador_gui.png",
-  prof_ciencias: "prof_ciencias.png",
-  sofia: "sofia.png",
-  zelador_carlos: "zelador_carlos.png",
-  treinador_marcos: "treinador_marcos.png",
-  bia: "bia.png"
+  programador_gui: "assets/programador_gui.png",
+  prof_ciencias: "assets/prof_ciencias.png",
+  sofia: "assets/sofia.png",
+  zelador_carlos: "assets/zelador_carlos.png",
+  treinador_marcos: "assets/treinador_marcos.png",
+  bia: "assets/bia.png"
 };
 
 const SKILLS = [
