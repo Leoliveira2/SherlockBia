@@ -76,7 +76,14 @@ const Modal = {
     this.input.value = "";
     this.actions.innerHTML = "";
   },
-  prompt({ title, message, placeholder = "", onConfirm, showInput = false, options = [] }) {
+  prompt({
+    title,
+    message,
+    placeholder = "",
+    onConfirm,
+    showInput = false,
+    options = []
+  }) {
     this.title.textContent = title;
     this.message.textContent = message;
     this.actions.innerHTML = "";
@@ -95,8 +102,10 @@ const Modal = {
         btn.className = "btn";
         btn.textContent = opt.label;
         btn.addEventListener("click", () => {
-          onConfirm(opt.value ?? opt.label, opt);
-          this.close();
+          const shouldClose = onConfirm(opt.value ?? opt.label, opt);
+          if (shouldClose !== false) {
+            this.close();
+          }
         });
         this.actions.appendChild(btn);
       });
@@ -105,8 +114,10 @@ const Modal = {
       confirmBtn.className = "btn";
       confirmBtn.textContent = "Confirmar";
       confirmBtn.addEventListener("click", () => {
-        onConfirm(this.input.value);
-        this.close();
+        const shouldClose = onConfirm(this.input.value);
+        if (shouldClose !== false) {
+          this.close();
+        }
       });
       this.actions.appendChild(confirmBtn);
     }
@@ -275,9 +286,10 @@ const Game = {
       options: node.options.map((opt) => ({ label: opt.label, value: opt })) ,
       onConfirm: (_, opt) => {
         const option = opt.value;
-        if (option.end) return;
+        if (option.end) return true;
         const nextId = option.next || dialogue.start;
         this.showDialogueNode(dialogue, nextId);
+        return false;
       }
     });
   },
