@@ -2,25 +2,36 @@
 // Implementa navegação, renderização de cenas e interação com pistas/diálogos
 
 const SCENE_BACKGROUNDS = {
-  school_hallway: "assets/school_hallway_cartoon.png",
-  corridor: "assets/school_hallway_cartoon.png",
-  hall: "assets/hall_cartoon.png",
-  library: "assets/library_cartoon.png",
-  kitchen: "assets/kitchen_cartoon.png",
-  canteen: "assets/canteen_cartoon.png",
-  garden: "assets/garden_cartoon.png",
-  computer_lab: "assets/computer_lab_cartoon.png",
-  music_room: "assets/music_room_cartoon.png",
-  classroom: "assets/hall_cartoon.png"
+  school_hallway: "assets/scenarios/corredor.png",
+  corridor: "assets/scenarios/corredor.png",
+  hall: "assets/scenarios/hall_trofeus.png",
+  library: "assets/scenarios/biblioteca.png",
+  kitchen: "assets/scenarios/cozinha.png",
+  canteen: "assets/scenarios/refeitorio.png",
+  garden: "assets/scenarios/jardim.png",
+  computer_lab: "assets/scenarios/lab_informatica.png",
+  music_room: "assets/scenarios/sala_musica.png",
+  classroom: "assets/scenarios/hall_trofeus.png",
+  laboratory: "assets/scenarios/laboratorio.png",
+  court: "assets/scenarios/quadra.png"
 };
 
 const CHARACTER_PORTRAITS = {
-  programador_gui: "assets/programador_gui.png",
-  prof_ciencias: "assets/prof_ciencias.png",
-  sofia: "assets/sofia.png",
-  zelador_carlos: "assets/zelador_carlos.png",
-  treinador_marcos: "assets/treinador_marcos.png",
-  bia: "assets/bia.png"
+  programador_gui: "assets/icons/programador_gui.png",
+  prof_ciencias: "assets/icons/prof_ciencias.png",
+  sofia: "assets/icons/sofia.png",
+  zelador_carlos: "assets/icons/zelador_carlos.png",
+  treinador_marcos: "assets/icons/treinador_marcos.png",
+  bia: "assets/icons/bia.png",
+  leo: "assets/icons/leo.png",
+  pedro: "assets/icons/pedro.png",
+  prof_arthur: "assets/icons/prof_arthur.png",
+  diretora_helena: "assets/icons/diretora_helena.png",
+  aluna_rita: "assets/icons/aluna_rita.png",
+  aluno_traquinas: "assets/icons/aluno_traquinas.png",
+  cozinheira_ana: "assets/icons/cozinheira_ana.png",
+  jardineiro_joao: "assets/icons/jardineiro_joao.png",
+  prof_quimica: "assets/icons/prof_quimica.png"
 };
 
 const SKILLS = [
@@ -38,6 +49,36 @@ const Storage = {
     }
   },
   save: (data) => localStorage.setItem("sherlock_bia", JSON.stringify(data))
+};
+
+// Helpers: small, reliable utilities
+const Utils = {
+  safeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  },
+  clueKindLabel(type) {
+    const map = {
+      observation: "🟡 Observação",
+      testimony: "🔵 Depoimento",
+      critical: "🔴 Evidência",
+      dialogue: "🔵 Depoimento",
+      hotspot: "🟡 Observação",
+      cipher: "🧩 Enigma",
+      pattern: "🧩 Enigma"
+    };
+    return map[type] || type;
+  },
+  isCritical(clue) {
+    return Boolean(clue.critical) || (clue.weight || 0) >= 3;
+  },
+  nowIso() {
+    return new Date().toISOString();
+  }
 };
 
 const Toast = {
@@ -70,22 +111,16 @@ const Modal = {
   },
   close() {
     this.overlay.classList.remove("show");
-    this.message.textContent = "";
+    this.message.innerHTML = "";
     this.title.textContent = "";
     this.input.style.display = "none";
     this.input.value = "";
     this.actions.innerHTML = "";
   },
-  prompt({
-    title,
-    message,
-    placeholder = "",
-    onConfirm,
-    showInput = false,
-    options = []
-  }) {
+  // Basic prompt (backwards compatible). Supports either plain text (message) or HTML (messageHtml).
+  prompt({ title, message = "", messageHtml = "", placeholder = "", onConfirm, showInput = false, options = [] }) {
     this.title.textContent = title;
-    this.message.textContent = message;
+    this.message.innerHTML = messageHtml || Utils.safeHtml(message);
     this.actions.innerHTML = "";
 
     if (showInput) {
@@ -102,10 +137,8 @@ const Modal = {
         btn.className = "btn";
         btn.textContent = opt.label;
         btn.addEventListener("click", () => {
-          const shouldClose = onConfirm(opt.value ?? opt.label, opt);
-          if (shouldClose !== false) {
-            this.close();
-          }
+          onConfirm(opt.value ?? opt.label, opt);
+          this.close();
         });
         this.actions.appendChild(btn);
       });
@@ -114,10 +147,8 @@ const Modal = {
       confirmBtn.className = "btn";
       confirmBtn.textContent = "Confirmar";
       confirmBtn.addEventListener("click", () => {
-        const shouldClose = onConfirm(this.input.value);
-        if (shouldClose !== false) {
-          this.close();
-        }
+        onConfirm(this.input.value);
+        this.close();
       });
       this.actions.appendChild(confirmBtn);
     }
@@ -132,6 +163,60 @@ const Modal = {
   }
 };
 
+// Promise-based helper (prevents callback hell and makes flows reliable)
+Modal.ask = function({ title, message = "", messageHtml = "", placeholder = "", showInput = false, options = [] }) {
+  return new Promise((resolve) => {
+    Modal.prompt({
+      title,
+      message,
+      messageHtml,
+      placeholder,
+      showInput,
+      options,
+      onConfirm: (value, opt) => resolve({ value, opt })
+    });
+    // If user closes modal via Cancel, we treat as null.
+    const cancelBtn = Modal.actions.querySelector("button.btn.ghost");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => resolve({ value: null, opt: null }), { once: true });
+    }
+  });
+};
+
+// Fully custom modal with HTML body and arbitrary buttons.
+Modal.openHtml = function({ title, html, buttons = [{ label: "Ok", value: "ok", primary: true }], cancellable = true, autoClose = true }) {
+  return new Promise((resolve) => {
+    Modal.title.textContent = title;
+    Modal.message.innerHTML = html;
+    Modal.input.style.display = "none";
+    Modal.input.value = "";
+    Modal.actions.innerHTML = "";
+
+    buttons.forEach((b) => {
+      const btn = document.createElement("button");
+      btn.className = b.primary ? "btn" : "btn ghost";
+      btn.textContent = b.label;
+      btn.addEventListener("click", () => {
+        if (autoClose) Modal.close();
+        resolve(b.value);
+      });
+      Modal.actions.appendChild(btn);
+    });
+    if (cancellable) {
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn ghost";
+      cancelBtn.textContent = "Cancelar";
+      cancelBtn.addEventListener("click", () => {
+        if (autoClose) Modal.close();
+        resolve(null);
+      });
+      Modal.actions.appendChild(cancelBtn);
+    }
+
+    Modal.overlay.classList.add("show");
+  });
+};
+
 const Game = {
   app: null,
   cases: [],
@@ -139,7 +224,10 @@ const Game = {
     coins: 0,
     xp: 0,
     unlockedSkills: [],
-    completedCases: {}
+    completedCases: {},
+    sessions: {},
+    onboarded: false,
+    telemetry: { totalClicks: 0, wrongAccusations: 0 }
   },
   currentCase: null,
 
@@ -151,11 +239,37 @@ const Game = {
     this.cases = await this.loadCases();
     this.bindNavigation();
     UI.renderWelcome();
+
+    // First-time onboarding (learning-first, not game-first)
+    if (!this.state.onboarded) {
+      this.state.onboarded = true;
+      Storage.save(this.state);
+      Modal.openHtml({
+        title: "🕵️ Como jogar (rápido)",
+        html: `
+          <div class="onboard">
+            <p><b>1)</b> Explore o cenário e toque nos pontos brilhantes.</p>
+            <p><b>2)</b> Questione as pessoas e escolha <b>perguntas</b> (não é só conversar!).</p>
+            <p><b>3)</b> Antes de acusar, escolha as <b>pistas</b> que sustentam sua hipótese.</p>
+            <p class="small">Dica: se clicar e não tiver nada, a Bia vai avisar 😉</p>
+          </div>
+        `,
+        buttons: [{ label: "Entendi!", value: "ok", primary: true }],
+        cancellable: false
+      });
+    }
   },
 
   async loadCases() {
-    const response = await fetch("cases.json");
-    return await response.json();
+    try {
+      const response = await fetch("cases.json");
+      if (!response.ok) throw new Error("Falha ao carregar casos.");
+      return await response.json();
+    } catch (err) {
+      console.error(err);
+      Toast.show("Erro ao carregar os casos do jogo.", "error");
+      return [];
+    }
   },
 
   bindNavigation() {
@@ -174,8 +288,8 @@ const Game = {
     });
   },
 
-  selectCulprit(caseData) {
-    const rng = new Math.seedrandom(caseData.id);
+  selectCulprit(caseData, seed) {
+    const rng = new Math.seedrandom(seed || caseData.id);
     const index = Math.floor(rng() * caseData.culpritPool.length);
     return caseData.culpritPool[index];
   },
@@ -184,15 +298,40 @@ const Game = {
     const caseData = this.cases.find((c) => c.id === caseId);
     if (!caseData) return;
 
-    const culprit = this.selectCulprit(caseData);
+    // Session (local only) for reliability + analytics
+    const existingSession = this.state.sessions[caseId];
+    const session = existingSession && existingSession.status === "open"
+      ? { ...existingSession }
+      : {
+          caseId,
+          status: "open",
+          startIso: Utils.nowIso(),
+          startTs: Date.now(),
+          timeSpentSec: 0,
+          errors: 0,
+          hints: 0,
+          wrongAccusations: 0,
+          clicks: 0,
+          lastActionTs: Date.now(),
+          visitedScene: false,
+          lastAccusation: null
+        };
+    this.state.sessions[caseId] = session;
+    Storage.save(this.state);
+
+    // Each new session can generate a different story (culprit), while remaining stable when resuming.
+    const culprit = session.culpritId || this.selectCulprit(caseData, `${caseData.id}::${session.startIso}`);
+    session.culpritId = culprit;
+    this.state.sessions[caseId] = session;
+    Storage.save(this.state);
+
     const clues = this.prepareClues(caseData, culprit);
 
     this.currentCase = {
       ...caseData,
       culprit,
       allClues: clues,
-      foundClues: [],
-      askedDialogues: new Set(),
+      foundClues: (session.foundClueIds || []).map((id) => clues.find((c) => c.id === id)).filter(Boolean),
       solved: false
     };
 
@@ -200,13 +339,18 @@ const Game = {
   },
 
   prepareClues(caseData, culprit) {
+    // Deterministic RNG per case + culprit (stable hotspots between sessions)
+    const rng = new Math.seedrandom(`${caseData.id}::${culprit}`);
     const pool = [];
     Object.entries(caseData.clueSets).forEach(([suspectId, clues]) => {
       clues.forEach((clue) => {
         const choice = clue.hs?.potentialPositions?.length
-          ? clue.hs.potentialPositions[Math.floor(Math.random() * clue.hs.potentialPositions.length)]
+          ? clue.hs.potentialPositions[Math.floor(rng() * clue.hs.potentialPositions.length)]
           : [30, 50, 12, 10];
-        pool.push({ ...clue, suspectId, position: choice });
+        // Normalize learning-centric metadata
+        const normalizedType = clue.learningType || clue.type || (clue.type === "dialogue" ? "testimony" : "observation");
+        const critical = Utils.isCritical(clue);
+        pool.push({ ...clue, suspectId, position: choice, learningType: critical ? "critical" : normalizedType, critical });
       });
     });
 
@@ -230,8 +374,38 @@ const Game = {
   markClueFound(clue) {
     if (this.currentCase.foundClues.some((c) => c.id === clue.id)) return;
     this.currentCase.foundClues.push(clue);
+
+    // persist in session
+    const sess = this.state.sessions[this.currentCase.id];
+    const ids = new Set(sess.foundClueIds || []);
+    ids.add(clue.id);
+    sess.foundClueIds = Array.from(ids);
+    sess.lastActionTs = Date.now();
+    this.state.sessions[this.currentCase.id] = sess;
+    Storage.save(this.state);
+
     this.addReward(clue.weight || 1, clue.type === "pattern" || clue.type === "cipher");
     UI.updateClueList(this.currentCase);
+
+    // Reflection prompt for critical evidence (teaches investigation explicitly)
+    if (clue.critical || clue.learningType === "critical") {
+      Modal.openHtml({
+        title: "🔴 Evidência importante!", 
+        html: `
+          <div class="reflection">
+            <p><b>${Utils.safeHtml(clue.text)}</b></p>
+            <p class="small">Pergunta rápida: o que essa evidência sugere?</p>
+            <ul class="small" style="text-align:left; margin:10px 0 0; padding-left:18px;">
+              <li>Ela <b>confirma</b> alguém no local?</li>
+              <li>Ela <b>contradiz</b> algum depoimento?</li>
+              <li>Qual seria a próxima pergunta a fazer?</li>
+            </ul>
+          </div>
+        `,
+        buttons: [{ label: "Continuar", value: "ok", primary: true }],
+        cancellable: false
+      });
+    }
   },
 
   addReward(weight, isPuzzle = false) {
@@ -268,12 +442,6 @@ const Game = {
       return;
     }
 
-    // Marcar pistas de diálogo encontradas
-    const dialogueClues = this.currentCase.allClues.filter(
-      (c) => c.suspectId === suspectId && c.type === "dialogue"
-    );
-    dialogueClues.forEach((c) => this.markClueFound(c));
-
     this.showDialogueNode(dialogue, dialogue.start);
   },
 
@@ -283,34 +451,178 @@ const Game = {
     Modal.prompt({
       title: "Conversa",
       message: node.text,
-      options: node.options.map((opt) => ({ label: opt.label, value: opt })) ,
+      options: node.options.map((opt) => ({ label: opt.label, value: opt })),
       onConfirm: (_, opt) => {
         const option = opt.value;
-        if (option.end) return true;
+
+        // Effects: award clue(s), reveal hotspot(s), add small penalties for misleading answers
+        try {
+          if (option?.effect?.awardClueId) {
+            const awarded = this.currentCase.allClues.find((c) => c.id === option.effect.awardClueId);
+            if (awarded) this.markClueFound(awarded);
+          }
+          if (option?.effect?.awardClueTag) {
+            const targets = this.currentCase.allClues.filter((c) => c.tags?.includes(option.effect.awardClueTag));
+            targets.forEach((c) => this.markClueFound(c));
+          }
+          if (option?.effect?.revealHotspotId) {
+            UI.revealHotspot(option.effect.revealHotspotId);
+          }
+          if (option?.effect?.misleading) {
+            const sess = this.state.sessions[this.currentCase.id];
+            sess.errors = (sess.errors || 0) + 1;
+            this.state.sessions[this.currentCase.id] = sess;
+            Storage.save(this.state);
+            Toast.show("Resposta confusa… anote e confirme com outras pistas.", "warning");
+          }
+        } catch (err) {
+          console.warn("Dialogue effect failed:", err);
+        }
+
+        if (option.end) return;
         const nextId = option.next || dialogue.start;
         this.showDialogueNode(dialogue, nextId);
-        return false;
       }
     });
   },
 
-  accuse(suspectId) {
+  async accuseWithReasoning(suspectId) {
     if (!this.currentCase) return;
+    const sess = this.state.sessions[this.currentCase.id];
+    const found = this.currentCase.foundClues || [];
+    if (found.length < 1) {
+      Toast.show("Colete pelo menos 1 pista antes de acusar.", "warning");
+      return;
+    }
+
+    // Step 1: choose 1–2 supporting clues (forces explicit reasoning)
+    const choicesHtml = `
+      <div class="reasoning">
+        <p class="small">Selecione <b>1 ou 2</b> pistas que sustentam sua acusação:</p>
+        <div class="checklist">
+          ${found
+            .map((c, idx) => `
+              <label class="check">
+                <input type="checkbox" data-clue="${Utils.safeHtml(c.id)}"> 
+                <span><span class="badge kind-${Utils.safeHtml(c.learningType || c.type)}">${Utils.safeHtml(Utils.clueKindLabel(c.learningType || c.type))}</span> ${Utils.safeHtml(c.text)}</span>
+              </label>
+            `)
+            .join("")}
+        </div>
+        <p class="small" style="margin-top:10px;">Depois, a Bia te mostra um resumo do seu raciocínio.</p>
+      </div>
+    `;
+
+    const confirm = await Modal.openHtml({
+      title: "🧠 Antes de acusar…", 
+      html: choicesHtml,
+      buttons: [
+        { label: "Confirmar", value: "ok", primary: true },
+        { label: "Cancelar", value: null, ghost: true }
+      ],
+      cancellable: false,
+      autoClose: false
+    });
+    if (confirm !== "ok") {
+      try { Modal.close(); } catch (_) {}
+      return;
+    }
+
+    const checked = Array.from(document.querySelectorAll('#custom-modal input[type="checkbox"][data-clue]:checked'))
+      .map((el) => el.getAttribute("data-clue"))
+      .slice(0, 2);
+
+    if (!checked.length) {
+      Toast.show("Escolha pelo menos 1 pista para justificar.", "warning");
+      // Modal stays open (autoClose: false)
+      return;
+    }
+
+    // Close the modal now that we captured state
+    Modal.close();
+
     const success = suspectId === this.currentCase.culprit;
     const caseResult = {
       culprit: this.currentCase.culprit,
       foundClues: this.currentCase.foundClues.map((c) => c.id),
-      success
+      success,
+      reasoning: { accused: suspectId, supportClues: checked }
     };
     this.state.completedCases[this.currentCase.id] = caseResult;
     Storage.save(this.state);
     this.currentCase.solved = success;
 
+    // Update session stats
+    sess.lastAccusation = { accused: suspectId, supportClues: checked, ts: Date.now() };
+    if (!success) {
+      sess.wrongAccusations = (sess.wrongAccusations || 0) + 1;
+      this.state.telemetry.wrongAccusations = (this.state.telemetry.wrongAccusations || 0) + 1;
+      Storage.save(this.state);
+    } else {
+      sess.status = "solved";
+      sess.timeSpentSec = Math.max(0, Math.floor((Date.now() - sess.startTs) / 1000));
+      Storage.save(this.state);
+    }
+
     if (success) {
       this.addReward(5);
       Toast.show("Caso resolvido! Você acertou o culpado!", "success");
+
+      // Debrief: teach how the conclusion was reached
+      const suspectName = this.currentCase.baseSuspects.find((s) => s.id === this.currentCase.culprit)?.name || this.currentCase.culprit;
+      const supportTexts = checked
+        .map((id) => this.currentCase.allClues.find((c) => c.id === id))
+        .filter(Boolean)
+        .map((c) => `• ${Utils.safeHtml(c.text)}`)
+        .join("<br>");
+
+      const criticalFound = (this.currentCase.foundClues || []).filter((c) => c.critical || c.learningType === "critical");
+      const criticalHtml = criticalFound.length
+        ? criticalFound.map((c) => `• ${Utils.safeHtml(c.text)}`).join("<br>")
+        : "(nenhuma evidência crítica coletada)";
+
+      Modal.openHtml({
+        title: "✅ Resumo do Caso", 
+        html: `
+          <div class="debrief">
+            <p><b>Culpado:</b> ${Utils.safeHtml(suspectName)}</p>
+            <p class="small"><b>Suas pistas de apoio:</b><br>${supportTexts}</p>
+            <hr style="opacity:.2; margin:10px 0;">
+            <p class="small"><b>Evidências importantes que você encontrou:</b><br>${criticalHtml}</p>
+            <div class="small" style="margin-top:10px; text-align:left;">
+              <b>Perguntas para reflexão</b>
+              <ul style="margin:6px 0 0; padding-left:18px;">
+                <li>Que pista foi <b>decisiva</b>?</li>
+                <li>Qual pergunta você faria <b>primeiro</b> na próxima vez?</li>
+                <li>Como você evitaria uma acusação por <b>chute</b>?</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        buttons: [{ label: "Concluir", value: "ok", primary: true }],
+        cancellable: false
+      });
     } else {
       Toast.show("Acusação incorreta. Continue investigando!", "error");
+
+      // Guided negative feedback (teaches comparison)
+      const accusedName = this.currentCase.baseSuspects.find((s) => s.id === suspectId)?.name || suspectId;
+      Modal.openHtml({
+        title: "🔎 Vamos pensar melhor…",
+        html: `
+          <div class="wrong">
+            <p class="small">Você acusou <b>${Utils.safeHtml(accusedName)}</b>. Agora compare hipóteses:</p>
+            <ul class="small" style="text-align:left; padding-left:18px;">
+              <li>Qual pista <b>não combina</b> com essa pessoa?</li>
+              <li>Quem teria <b>acesso</b> ao local?</li>
+              <li>Qual depoimento precisa ser <b>confirmado</b>?</li>
+            </ul>
+            <p class="small" style="margin-top:8px;">Dica prática: volte ao cenário e procure uma <b>evidência vermelha</b> (🔴).</p>
+          </div>
+        `,
+        buttons: [{ label: "Entendi", value: "ok", primary: true }],
+        cancellable: false
+      });
     }
     UI.renderCase(this.currentCase);
   }
@@ -369,14 +681,19 @@ const UI = {
     const cards = Game.cases
       .map((c) => {
         const solved = Game.state.completedCases[c.id]?.success;
+        const sess = Game.state.sessions?.[c.id];
+        const inProgress = sess && sess.status === "open" && (sess.foundClueIds?.length || 0) > 0;
+        const story = (c.culpritPool?.length || 0) > 1
+          ? `<span class="badge mini neutral">🔀 História muda</span>`
+          : "";
         return `
           <article class="case-card">
-            <div class="case-meta">Capítulo ${c.chapter} • Dificuldade ${"★".repeat(c.difficulty)}</div>
+            <div class="case-meta">Capítulo ${c.chapter} • Dificuldade ${"★".repeat(c.difficulty)} ${story}</div>
             <h3>${c.title}</h3>
             <p>${c.intro}</p>
             <div class="case-footer">
-              <span class="badge ${solved ? "success" : "neutral"}">${solved ? "Resolvido" : "Disponível"}</span>
-              <button class="btn" data-case-id="${c.id}">Investigar</button>
+              <span class="badge ${solved ? "success" : inProgress ? "warning" : "neutral"}">${solved ? "Resolvido" : inProgress ? "Em andamento" : "Disponível"}</span>
+              <button class="btn" data-case-id="${c.id}">${inProgress ? "Continuar" : "Investigar"}</button>
             </div>
           </article>`;
       })
@@ -502,13 +819,23 @@ const UI = {
     this.renderHotspots(caseData);
     this.updateClueList(caseData);
 
+    // Negative feedback on "empty clicks" (teaches visual scanning)
+    const scene = document.querySelector(".scene-wrapper");
+    if (scene) {
+      scene.addEventListener("click", (ev) => {
+        // If clicked a hotspot/button, ignore
+        if (ev.target?.closest(".difference-hotspot")) return;
+        Toast.show("Nada aqui… observe melhor!", "info");
+      });
+    }
+
     document.querySelectorAll("button[data-dialogue]").forEach((btn) => {
       btn.addEventListener("click", () => Game.openDialogue(btn.getAttribute("data-dialogue")));
     });
 
     document.getElementById("accuse-btn").addEventListener("click", () => {
       const suspectId = document.getElementById("accuse-select").value;
-      Game.accuse(suspectId);
+      Game.accuseWithReasoning(suspectId);
     });
   },
 
@@ -516,23 +843,56 @@ const UI = {
     const overlay = document.getElementById("scene-overlay");
     overlay.innerHTML = "";
     const boost = Game.hasSkill("olhos_de_agua") ? 1.3 : 1;
+    // Visual guidance: pulse/glow on the first visit of a case
+    const sess = Game.state.sessions?.[caseData.id];
+    const firstVisit = sess && !sess.visitedScene;
+    if (sess && firstVisit) {
+      sess.visitedScene = true;
+      Storage.save(Game.state);
+    }
+
     caseData.allClues.forEach((clue) => {
       if (!clue.hs) return; // somente pistas com hotspot visual
       const [x, y, w, h] = clue.position;
       const btn = document.createElement("button");
-      btn.className = "difference-hotspot";
+      const alreadyFound = (caseData.foundClues || []).some((c) => c.id === clue.id);
+      btn.className = `difference-hotspot ${firstVisit && !alreadyFound ? "pulse" : ""} ${clue.critical || clue.learningType === "critical" ? "critical" : ""}`;
+      btn.dataset.clueId = clue.id;
       btn.style.left = `${x}%`;
       btn.style.top = `${y}%`;
       btn.style.width = `${w * boost}%`;
       btn.style.height = `${h * boost}%`;
       btn.innerHTML = clue.hs.icon || "?";
       btn.setAttribute("aria-label", clue.text);
+      if (alreadyFound) btn.classList.add("found");
       btn.addEventListener("click", () => this.handleHotspotClick(clue, btn));
       overlay.appendChild(btn);
     });
   },
 
+  // Highlights a hotspot after a dialogue hint (helps children link testimony → search)
+  revealHotspot(clueId) {
+    const el = document.querySelector(`.difference-hotspot[data-clue-id="${CSS.escape(clueId)}"]`);
+    if (el) {
+      el.classList.add("hinted");
+      setTimeout(() => el.classList.remove("hinted"), 6000);
+      Toast.show("Dica: procure um ponto brilhante no cenário!", "info");
+    }
+  },
+
   handleHotspotClick(clue, element) {
+    // telemetry
+    try {
+      Game.state.telemetry.totalClicks = (Game.state.telemetry.totalClicks || 0) + 1;
+      const sess = Game.state.sessions?.[Game.currentCase?.id];
+      if (sess) {
+        sess.clicks = (sess.clicks || 0) + 1;
+        sess.lastActionTs = Date.now();
+        Game.state.sessions[Game.currentCase.id] = sess;
+      }
+      Storage.save(Game.state);
+    } catch (_) {}
+
     if (Game.currentCase?.foundClues.some((c) => c.id === clue.id)) {
       Toast.show("Você já coletou essa pista.", "warning");
       return;
@@ -580,7 +940,12 @@ const UI = {
       return;
     }
     list.innerHTML = caseData.foundClues
-      .map((clue) => `<li><span class="badge">${clue.type}</span> ${clue.text}</li>`)
+      .map((clue) => {
+        const kind = clue.learningType || clue.type;
+        const label = Utils.clueKindLabel(kind);
+        const criticalMark = clue.critical ? " <span class=\"badge critical\">🔴</span>" : "";
+        return `<li><span class="badge kind-${Utils.safeHtml(kind)}">${Utils.safeHtml(label)}</span>${criticalMark} ${Utils.safeHtml(clue.text)}</li>`;
+      })
       .join("");
   }
 };
