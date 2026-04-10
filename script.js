@@ -232,11 +232,15 @@ const Game = {
   currentCase: null,
 
   async init() {
+    console.log("Iniciando Sherlock Bia v2.0...");
     this.app = document.getElementById("app");
+    if (!this.app) console.error("Elemento #app não encontrado!");
     Toast.init();
     Modal.init();
     this.state = { ...this.state, ...Storage.load() };
+    console.log("Estado carregado:", this.state);
     this.cases = await this.loadCases();
+    console.log("Casos carregados:", this.cases.length);
     this.bindNavigation();
     UI.renderWelcome();
 
